@@ -4,8 +4,6 @@ DKC1 — Log tracer converter to ASM
 ==================================
 Read txt files from folder traces/
 Generate asm files in src/Bank_XX/
-Usage :
-    python3 tools/trace_to_asm.py
 """
 
 import re
@@ -17,7 +15,7 @@ from collections import Counter, OrderedDict, defaultdict
 
 REPO_ROOT  = Path(__file__).parent.parent   # dkc-decompiled-code/
 TRACES_DIR = REPO_ROOT / 'traces'
-SRC_DIR    = REPO_ROOT / 'src'
+CODE_DIR    = REPO_ROOT / 'code'
 
 # /-----/ Pattern parsing /-----/
 
@@ -117,9 +115,9 @@ def comment_instr(instr, hits_addr):
     return ('  ; ' + ', '.join(parts)) if parts else ''
 
 def write_bank(bank_id, adresses, seen, hits):
-    """Write src/Bank_XX/Bank_XX.asm"""
+    """Write code/Bank_XX/Bank_XX.asm"""
 
-    folder_path = SRC_DIR / f'Bank_{bank_id}'
+    folder_path = CODE_DIR / f'Bank_{bank_id}'
     folder_path.mkdir(parents=True, exist_ok=True)
     file = folder_path / f'Bank_{bank_id}.asm'
 
@@ -149,9 +147,9 @@ def write_bank(bank_id, adresses, seen, hits):
     return file
 
 def write_spc(seen_s, hits_s):
-    """Write src/SPC700/SPC700.asm"""
+    """Write code/SPC700/SPC700.asm"""
 
-    folder = SRC_DIR / 'SPC700'
+    folder = CODE_DIR / 'SPC700'
     folder.mkdir(exist_ok=True)
     file = folder / 'SPC700.asm'
 
@@ -170,7 +168,7 @@ def write_spc(seen_s, hits_s):
 
 def trace_to_asm():
 
-    print(f'Reading in {REPO_ROOT}/traces')
+    print(f'Reading in {TRACES_DIR}')
     seen, hits, seen_s, hits_s = load_traces()
 
     total_lines_nb   = sum(hits.values())
@@ -189,7 +187,7 @@ def trace_to_asm():
     # /------------------------------/
 
     print(f'')
-    print(f'Writing in {REPO_ROOT}/src')
+    print(f'Writing in {CODE_DIR}')
 
     by_bank = defaultdict(list)
     for addr in seen:

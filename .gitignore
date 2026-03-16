@@ -3,7 +3,6 @@
 .idea
 
 # generated banks
-src/*
 
 # log traces
 traces/*

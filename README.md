@@ -9,8 +9,8 @@ No ROM, assets, or extracted code in this repository.
 **1. Code capture from Mesen-S**
 
 ```txt
-Mesen-S → Debug → Trace Logger → Log to file
-Launch game → Stop → Save traces as .txt
+Mesen-S -> Debug -> Trace Logger -> Log to file
+Launch Game -> Stop -> Save traces as .txt
 ```
 
 **2. Place logs in `traces/`**
@@ -24,12 +24,10 @@ traces/player_jump.txt
 **3. Run script**
 
 ```bash
-python3 tools/trace_to_asm.py
+bash extract-traces.sh
 ```
 
 This script reads **all** `.txt` from `traces/`, delete double code, and generate `.asm` files in `src/`.
-
----
 
 ## Progress
 
