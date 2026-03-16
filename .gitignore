@@ -1,0 +1,9 @@
+# IDE
+.vscode
+.idea
+
+# generated banks
+code/*
+
+# log traces
+traces/*
