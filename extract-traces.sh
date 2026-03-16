@@ -1,0 +1,1 @@
+python3 ./tools/trace_to_asm.py
