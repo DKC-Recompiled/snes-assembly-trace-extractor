@@ -4,7 +4,6 @@ DKC1 — Log tracer converter to ASM
 ==================================
 Read txt files from folder traces/
 Generate asm files in src/Bank_XX/
-
 Usage :
     python3 tools/trace_to_asm.py
 """
@@ -55,7 +54,7 @@ HW = {
     0x2180:'WMDATA',  0x2181:'WMADDL',   0x2182:'WMADDM',  0x2183:'WMADDH',
 }
 
-def charger_traces():
+def load_traces():
     """Read .txt from traces folder and return uniques instructions."""
     files = sorted(TRACES_DIR.glob('*.txt'))
     if not files:
@@ -124,7 +123,7 @@ def write_bank(bank_id, adresses, seen, hits):
     folder_path.mkdir(parents=True, exist_ok=True)
     file = folder_path / f'Bank_{bank_id}.asm'
 
-    lines = [
+    content = [
         f'; DKC1 (SNES) — Bank ${bank_id}',
         f'; {len(adresses)} uniques instructions',
         f'; Generated from traces — Do not modify it',
@@ -138,15 +137,15 @@ def write_bank(bank_id, adresses, seen, hits):
         d = seen[addr]
 
         if prev is not None and addr_int > prev + 8:
-            lines.append(f'')
-            lines.append(f'; --- gap ${addr_int - prev:04X} bytes (non traced) ---')
-            lines.append(f'')
+            content.append(f'')
+            content.append(f'; --- gap ${addr_int - prev:04X} bytes (non traced) ---')
+            content.append(f'')
 
         com = comment_instr(d['instr'], hits[addr])
-        lines.append(f'CODE_{addr}:  {d["instr"]:<36}{com}')
+        content.append(f'CODE_{addr}:  {d["instr"]:<36}{com}')
         prev = addr_int
 
-    file.write_text('\n'.join(lines) + '\n')
+    file.write_text('\n'.join(content) + '\n')
     return file
 
 def write_spc(seen_s, hits_s):
@@ -156,7 +155,7 @@ def write_spc(seen_s, hits_s):
     folder.mkdir(exist_ok=True)
     file = folder / 'SPC700.asm'
 
-    lines = [
+    content = [
         '; DKC1 — SPC700 (CPU audio Sony)',
         '; Boot ROM standard, do not modify',
         '',
@@ -164,30 +163,33 @@ def write_spc(seen_s, hits_s):
     for addr, instr in seen_s.items():
         c = hits_s[addr]
         com = f'  ; loop x{c} in traces' if c > 1 else ''
-        lines.append(f'SPC_{addr}:  {instr:<30}{com}')
+        content.append(f'SPC_{addr}:  {instr:<30}{com}')
 
-    file.write_text('\n'.join(lines) + '\n')
+    file.write_text('\n'.join(content) + '\n')
     return file
 
-def main():
-    print(f'Repo : {REPO_ROOT}')
-    print(f'')
-    print(f'Reading traces...')
-    seen, hits, seen_s, hits_s = charger_traces()
+def trace_to_asm():
 
-    total   = sum(hits.values())
-    uniques = len(seen)
-    redond  = total - uniques
+    print(f'Reading in {REPO_ROOT}/traces')
+    seen, hits, seen_s, hits_s = load_traces()
+
+    total_lines_nb   = sum(hits.values())
+    unique_lines_nb = len(seen)
+    redond_lines_nb  = total_lines_nb - unique_lines_nb
     banks   = sorted(set(a[:2] for a in seen))
+
+    # /------------------------------/
 
     print(f'')
     print(f'Results :')
-    print(f'    65c816  : {total} lines → {uniques} uniques ({redond} double code deleted)')
+    print(f'    65c816  : {total_lines_nb} lines -> {unique_lines_nb} uniques ({redond_lines_nb} double code deleted)')
     print(f'    SPC700  : {sum(hits_s.values())} lines -> {len(seen_s)} uniques')
     print(f'    Banks : {banks}')
 
+    # /------------------------------/
+
     print(f'')
-    print(f'Writing in src/ ...')
+    print(f'Writing in {REPO_ROOT}/src')
 
     by_bank = defaultdict(list)
     for addr in seen:
@@ -195,15 +197,21 @@ def main():
 
     for bank, addrs in sorted(by_bank.items()):
         f = write_bank(bank, addrs, seen, hits)
-        print(f'    → {f.relative_to(REPO_ROOT)}  ({len(addrs)} instrs)')
+        print(f'    -> {f.relative_to(REPO_ROOT)}  ({len(addrs)} instrs)')
 
     if seen_s:
         f = write_spc(seen_s, hits_s)
-        print(f'    → {f.relative_to(REPO_ROOT)}  ({len(seen_s)} instrs)')
+        print(f'    -> {f.relative_to(REPO_ROOT)}  ({len(seen_s)} instrs)')
+
+
+def main():
+    print(f'Starting cleaning and exporting code : {REPO_ROOT}')
+    print(f'')
+
+    trace_to_asm()
 
     print(f'')
     print(f'Finished')
-
 
 if __name__ == '__main__':
     main()
