@@ -4,6 +4,8 @@
 
 # generated banks
 code/*
+*.zip
+.zip
 
 # log traces
 traces/*
