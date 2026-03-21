@@ -1,6 +1,6 @@
 # SNES Assembly extractor 
 
-This tool reads [Mesen emulator](https://github.com/SourMesen/Mesen2) `.txt` log traces, delete double code, and generate structured `.asm` files.
+This tool reads [Mesen](https://github.com/SourMesen/Mesen2) emulator `.txt` log traces, delete double code, and generate structured `.asm` files.
 
 Originally made for a **Donkey Kong Country** recompilation effort. 
 
