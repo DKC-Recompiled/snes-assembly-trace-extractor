@@ -4,7 +4,7 @@
 ==================================
 DKC1 — Log tracer converter to ASM
 ==================================
-Read txt files from folder traces/
+Read txt files from directory traces/
 Generate asm files in src/Bank_XX/
 ==================================
 """
@@ -17,25 +17,26 @@ import data
 
 # /-----/ Globals /-----/
 
-TRACES_EXTENSION = "txt"
+REPO_ROOT  = Path(__file__).parent.parent
 
-# /-----/ Paths /-----/
-
-REPO_ROOT  = Path(__file__).parent.parent # dkc-decompiled-code/
+# /-----/ traces /-----/
 
 TRACES_DIR = "traces"
 TRACES_PATH = REPO_ROOT / TRACES_DIR
+TRACES_EXTENSION = "txt"
+
+# /-----/ code banks /-----/
 
 CODE_DIR = "code"
 CODE_PATH = REPO_ROOT / CODE_DIR
 
 def load_traces():
-    """Read .txt from traces folder and return uniques instructions."""
+    """Read .txt from traces directory and return uniques instructions."""
 
     files = sorted(TRACES_PATH.glob(f'*.{TRACES_EXTENSION}'))
     if not files:
         print(f"No .{TRACES_EXTENSION} found in {TRACES_PATH}")
-        print(f"Export log from Mesen and place it in {TRACES_DIR}")
+        print(f"Export log from Mesen (or any emulator) and place it in {TRACES_DIR}")
         sys.exit(1)
 
     seen   = OrderedDict()
@@ -92,22 +93,22 @@ def comment_instr(instr, hits_addr):
 
     # Loop detected
     if hits_addr > 1:
-        parts.append(f'loop x{hits_addr} in traces')
+        parts.append(f'(looped x{hits_addr} in traces)')
 
     return ('  ; ' + ', '.join(parts)) if parts else ''
 
 def write_bank(bank_id, adresses, seen, hits):
     """Write code/Bank_XX/Bank_XX.asm"""
 
-    folder_path = CODE_PATH / f'Bank_{bank_id}'
-    folder_path.mkdir(parents=True, exist_ok=True)
-    file = folder_path / f'Bank_{bank_id}.asm'
+    dir_path = CODE_PATH / f'Bank_{bank_id}'
+    dir_path.mkdir(parents=True, exist_ok=True)
+    file = dir_path / f'Bank_{bank_id}.asm'
 
     content = [
         f'; DKC1 (SNES) — Bank ${bank_id}',
         f'; {len(adresses)} uniques instructions',
         f'; Generated from {TRACES_DIR} — Do not modify it',
-        f'; To write comments: Bank_{bank_id}_annotated.asm in the folder',
+        f'; To write comments: Bank_{bank_id}_annotated.asm in the directory',
         '',
     ]
 
@@ -129,11 +130,13 @@ def write_bank(bank_id, adresses, seen, hits):
     return file
 
 def write_spc(seen_s, hits_s):
-    """Write code/SPC700/SPC700.asm"""
+    """Write code/SPC700/SPC700.asm (CPU audio Sony)"""
 
-    folder = CODE_PATH / 'SPC700'
-    folder.mkdir(exist_ok=True)
-    file = folder / 'SPC700.asm'
+    directory = CODE_PATH / 'SPC700'
+    directory.mkdir(exist_ok=True)
+
+    file_name = 'SPC700.asm'
+    file = directory / file_name
 
     content = [
         '; DKC1 — SPC700 (CPU audio Sony)',
@@ -142,7 +145,7 @@ def write_spc(seen_s, hits_s):
     ]
     for addr, instr in seen_s.items():
         c = hits_s[addr]
-        com = f'  ; loop x{c} in traces' if c > 1 else ''
+        com = f'  ; (looped x{c} in traces)' if c > 1 else ''
         content.append(f'SPC_{addr}:  {instr:<30}{com}')
 
     file.write_text('\n'.join(content) + '\n')
@@ -192,7 +195,7 @@ def main():
     trace_to_asm()
 
     print('==================================')
-    print(f'Finished')
+    print(f'            Finished')
     print('==================================')
 
 if __name__ == '__main__':
