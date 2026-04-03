@@ -2,7 +2,7 @@
 
 """
 ==================================
-DKC1 — Log tracer converter to ASM
+Log tracer converter to ASM
 ==================================
 Read txt files from directory traces/
 Generate asm files in src/Bank_XX/
@@ -105,9 +105,9 @@ def write_bank(bank_id, adresses, seen, hits):
     file = dir_path / f'Bank_{bank_id}.asm'
 
     content = [
-        f'; DKC1 (SNES) — Bank ${bank_id}',
+        f'; Bank ${bank_id}',
         f'; {len(adresses)} uniques instructions',
-        f'; Generated from {TRACES_DIR} — Do not modify it',
+        f'; Generated from {TRACES_DIR}',
         f'; To write comments: Bank_{bank_id}_annotated.asm in the directory',
         '',
     ]
@@ -130,7 +130,7 @@ def write_bank(bank_id, adresses, seen, hits):
     return file
 
 def write_spc(seen_s, hits_s):
-    """Write code/SPC700/SPC700.asm (CPU audio Sony)"""
+    """Write code/SPC700/SPC700.asm (Audio CPU)"""
 
     directory = CODE_PATH / 'SPC700'
     directory.mkdir(exist_ok=True)
@@ -139,7 +139,7 @@ def write_spc(seen_s, hits_s):
     file = directory / file_name
 
     content = [
-        '; DKC1 — SPC700 (CPU audio Sony)',
+        '; SPC700 (Audio CPU Sony)',
         '; Boot ROM standard, do not modify',
         '',
     ]
@@ -186,10 +186,9 @@ def trace_to_asm():
         f = write_spc(seen_s, hits_s)
         print(f'    -> {f.relative_to(REPO_ROOT)}  ({len(seen_s)} instrs)')
 
-
 def main():
     print('================================================================')
-    print(f'Starting cleaning and exporting code from : {TRACES_DIR}')
+    print(f'Starting converting code from : {TRACES_DIR}')
     print('================================================================')
 
     trace_to_asm()
