@@ -1,1 +1,1 @@
-python3 ./src/trace_to_asm.py
+python3 ./src/engine.py

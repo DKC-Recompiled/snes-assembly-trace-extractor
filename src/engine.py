@@ -19,13 +19,13 @@ import data
 
 REPO_ROOT  = Path(__file__).parent.parent
 
-# /-----/ traces /-----/
+# traces
 
 TRACES_DIR = "traces"
 TRACES_PATH = REPO_ROOT / TRACES_DIR
 TRACES_EXTENSION = "txt"
 
-# /-----/ code banks /-----/
+# code banks
 
 CODE_DIR = "code"
 CODE_PATH = REPO_ROOT / CODE_DIR
