@@ -4,7 +4,7 @@ This tool converts [Mesen](https://github.com/SourMesen/Mesen2) emulator `.txt` 
 
 It handles code repetitions and SPC700 audio code.
 
-This was developed using [Mesen](https://github.com/SourMesen/Mesen2), but I don't guarantee it will for other emulators.
+This was developed using [Mesen](https://github.com/SourMesen/Mesen2), but I don't guarantee if it works for other emulators. Contact me if so.
 
 > [!IMPORTANT]
 > **No rom, assets, nor extracted code in this repository**.
